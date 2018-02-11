@@ -17,7 +17,7 @@ class App extends Component {
 
   _onFetch = () => {
     const url = 'https://newsapi.org/v2/everything?apiKey=2eab118a7c9d450299db63f95f6e0564&q=jcb OR visa OR クレジット OR プリペイド OR デビット'
-    fetch(url)
+    fetch(url, {cache: false})
     .then(response => response.json())
     .then(json => {
       const articles = json.articles.map(article => article)
