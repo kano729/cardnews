@@ -1,6 +1,7 @@
 {
   "name": "fetchtest",
   "version": "0.1.0",
+  "homepage": "https://onishi024.github.io/cardnews/",
   "private": true,
   "dependencies": {
     "react": "^16.2.0",
@@ -11,7 +12,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy": "npm run build && gh-pages -d build"
   },
   "devDependencies": {
     "newsapi": "^2.2.0",
