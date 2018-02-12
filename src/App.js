@@ -15,8 +15,22 @@ class App extends Component {
     this._onFetch()
   }
 
+  querys = [
+    // "jcb",
+    "visa",
+    "mastercard",
+    "amex",
+    "%E3%82%AF%E3%83%AC%E3%82%B8%E3%83%83%E3%83%88", //クレジット
+    "%E3%83%97%E3%83%AA%E3%83%9A%E3%82%A4%E3%83%89", //プリペイド
+    "%E3%83%87%E3%83%93%E3%83%83%E3%83%88" //デビット
+  ]
+
   _onFetch = () => {
-    const url = 'https://newsapi.org/v2/everything?apiKey=2eab118a7c9d450299db63f95f6e0564&q=jcb OR visa OR クレジット OR プリペイド OR デビット'
+    let url = 'https://newsapi.org/v2/everything?apiKey=2eab118a7c9d450299db63f95f6e0564&q=jcb'
+    for (let i in this.querys) {
+      url += " OR " + this.querys[i]
+    }
+    console.log(url)
     fetch(url, {cache: false})
     .then(response => response.json())
     .then(json => {
