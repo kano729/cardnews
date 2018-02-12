@@ -1,5 +1,6 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import HotTable from 'react-handsontable'
+import moment from 'moment'
 
 class App extends Component {
 
@@ -15,22 +16,24 @@ class App extends Component {
     this._onFetch()
   }
 
-  querys = [
-    // "jcb",
-    "visa",
-    "mastercard",
-    "amex",
-    "%E3%82%AF%E3%83%AC%E3%82%B8%E3%83%83%E3%83%88", //クレジット
-    "%E3%83%97%E3%83%AA%E3%83%9A%E3%82%A4%E3%83%89", //プリペイド
-    "%E3%83%87%E3%83%93%E3%83%83%E3%83%88" //デビット
-  ]
-
   _onFetch = () => {
+    const querys = [
+      // "jcb",
+      "visa",
+      "mastercard",
+      "amex",
+      "fintech",
+      "%E3%82%AF%E3%83%AC%E3%82%B8%E3%83%83%E3%83%88", //クレジット
+      "%E3%83%97%E3%83%AA%E3%83%9A%E3%82%A4%E3%83%89", //プリペイド
+      "%E3%83%87%E3%83%93%E3%83%83%E3%83%88" //デビット
+    ]
     let url = 'https://newsapi.org/v2/everything?apiKey=2eab118a7c9d450299db63f95f6e0564&q=jcb'
-    for (let i in this.querys) {
-      url += " OR " + this.querys[i]
+    for (let i in querys) {
+      url += " OR " + querys[i]
     }
-    console.log(url)
+    url += "&from="+moment().subtract(7, 'days').format("YYYY-MM-DD")
+    url += "&to="+moment().format("YYYY-MM-DD")
+    console.log()
     fetch(url, {cache: false})
     .then(response => response.json())
     .then(json => {
@@ -87,7 +90,7 @@ class App extends Component {
     }
     return (
       <div className="App">
-        <h2>Card Payment Breaking News</h2>
+        <h2>Card Payment Breaking News v0.2</h2>
         powered by <a href='https://newsapi.org/'>News API v2</a>
         {message}
       </div>
