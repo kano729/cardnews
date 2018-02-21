@@ -1,8 +1,11 @@
 import React, { Component } from 'react'
 import HotTable from 'react-handsontable'
-import RaisedButton from 'material-ui/RaisedButton';
+import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import moment from 'moment'
+import Pager from './Pager'
+import Articles from './Articles'
 
 class App extends Component {
 
@@ -39,121 +42,43 @@ class App extends Component {
     for (let i in querys) {
       url += " OR " + querys[i]
     }
-    url += "&from="+moment().subtract(7, 'days').format("YYYY-MM-DD")
+    url += "&from="+moment().subtract(30, 'days').format("YYYY-MM-DD")
     url += "&to="+moment().format("YYYY-MM-DD")
-    
+
     fetch(url, {cache: false})
     .then(response => response.json())
     .then(json => {
       const articles = json.articles.map(article => article)
+        .sort((a, b) => {return a.publishedAt < b.publishedAt ? 1 : -1})
       const totalResults = json.totalResults
       this.setState({articles,totalResults})
     })
-
   }
 
-  styles = {
-    hot: {
-      margin: 12,
-      fontSize: 12,
-    }
+  //ページ遷移用メソッド
+  onClickPrev = () => {
+    const page = this.state.page - 1
+    this.setState({page})
+    this._onFetch(page)
   }
-
-  //カラムヘッダー定義
-  colHeaders = ['source', 'author', 'title', 'description', 'image', 'publishedAt', 'like', 'select']
-
-  //カラムデータ定義
-  columns = [
-    { data: 'source', editor: false },
-    { data: 'author', editor: false },
-    { data: 'title', editor: false, renderer: 'html' },
-    { data: 'description', editor: false },
-    { data: 'image', editor: false, renderer: 'html' },
-    { data: 'publishedAt', editor: false },
-    { data: 'like', editor: false },
-    { data: 'selected', type: 'checkbox' },
-  ]
-
-  _onClick = () => {
-    console.log('Like!')
-  }
-
-  _prev = () => {
-    if(this.state.page !== 1) {
-      const page = this.state.page - 1
-      this.setState({page})
-      this._onFetch(page)
-    } else {
-      console.log('前のページはないよ')
-    }
-
-  }
-
-  _next = () => {
+  onClickNext = () => {
     const page = this.state.page + 1
     this.setState({page})
     this._onFetch(page)
   }
 
+  //描画
   render() {
-    let page = ""
-    // <button onClick={() => {this._prev()}}>前へ</button>
-    // <button onClick={() => {this._next()}}>次へ</button>
-    const style = {
-      margin: 12,
-    };
-    page = <div>page:{this.state.page}
-              <MuiThemeProvider>
-                <RaisedButton label="前へ" secondary={true} style={style} onClick={() => {this._prev()}}/>
-                <RaisedButton label="次へ" primary={true} style={style} onClick={() => {this._next()}}/>
-              </MuiThemeProvider>
-           </div>
-
-    let result = ""
-    result = <div>totalResults:{this.state.totalResults}</div>
-
-    let message = ""
-    if (this.state.articles !== []) {
-      const _articles = this.state.articles.map(article => {
-        return{
-          source: article.source.name,
-          author: article.author,
-          title: "<a href='"+article.url+"'>"+article.title+"</a>",
-          description: article.description,
-          image: "<img src='"+article.urlToImage+"'/>",
-          publishedAt: article.publishedAt,
-          like: 0,
-          selected: false,
-        }
-      })
-//      }).sort((a, b) => {return a.publishedAt < b.publishedAt ? 1 : -1})
-      message = <div style={this.styles.hot}><HotTable
-                  root="hot"
-                  data={_articles}
-                  colHeaders={this.colHeaders}
-                  columns={this.columns}
-                  colWidths={[50, 50, 100, 200, 80]}
-                  columnSorting={false}
-                  width="1000"
-                  stretchH="all"
-                  manualColumnResize={true}
-                  /></div>
-    } else {
-      page = "null"
-      result = "null"
-      message = "null"
-    }
     return (
       <div className="App">
-        <h2>Card Payment Breaking News v0.2</h2>
-        powered by <a href='https://newsapi.org/'>News API v2</a>
-        <br/>
-        <button onClick={() => {this._onClick()}}>Like!</button>
-        {page}
-        {result}
-        {message}
+        <MuiThemeProvider muiTheme={getMuiTheme(darkBaseTheme)}>
+          <a href='https://onishi024.github.io/cardnews/'><h2>Card Payment Breaking News v0.2</h2></a>
+          <p>powered by <a href='https://newsapi.org/'>News API v2</a></p>
+          <Articles articles={this.state.articles} />
+          <Pager page={this.state.page} totalResults={this.state.totalResults} onClickPrev={this.onClickPrev} onClickNext={this.onClickNext} />
+        </MuiThemeProvider>
       </div>
-    );
+    )
   }
 }
 
