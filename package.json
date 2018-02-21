@@ -17,6 +17,7 @@
     "deploy": "npm run build && gh-pages -d build"
   },
   "devDependencies": {
+    "moment": "^2.20.1",
     "newsapi": "^2.2.0",
     "react-handsontable": "^0.3.1"
   }
